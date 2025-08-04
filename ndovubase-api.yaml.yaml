@@ -1,0 +1,318 @@
+openapi: 3.0.0
+info:
+  title: Ndovubase SMS API
+  description: SMS Messaging API for Ndovubase Solutions
+  version: 1.0.0
+  contact:
+    name: John Muriu
+    phone: 0703561237
+    email: info@ndovubase.com
+
+servers:
+  - url: https://bulk.ndovubase.com/sms/v3
+
+paths:
+  /sendsms:
+    post:
+      summary: Send a Single SMS
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                api_key:
+                  type: string
+                serviceId:
+                  type: string
+                mobile:
+                  type: string
+                message:
+                  type: string
+                from:
+                  type: string
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status_code:
+                    type: integer
+                  status_desc:
+                    type: string
+                  credit_balance:
+                    type: string
+                  message_id:
+                    type: integer
+                  message_cost:
+                    type: number
+
+  /sendmultiple:
+    post:
+      summary: Send Multiple SMS Messages
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                api_key:
+                  type: string
+                serviceId:
+                  type: string
+                from:
+                  type: string
+                date_send:
+                  type: string
+                  description: "Optional. If provided, message will be scheduled. Format: YYYY-MM-DD HH:mm:ss"
+                messages:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      mobile:
+                        type: string
+                      message:
+                        type: string
+                      client_ref:
+                        type: integer
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status_code:
+                    type: integer
+                  status_desc:
+                    type: string
+                  credit_balance:
+                    type: string
+                  schedule_details:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message_id:
+                          type: integer
+                        client_ref:
+                          type: integer
+                        mobile:
+                          type: string
+                        schedule_status:
+                          type: string
+                        schedule_desc:
+                          type: string
+                        network_id:
+                          type: string
+                        message_cost:
+                          type: number
+
+  /profile:
+    post:
+      summary: Get Partner Profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                api_key:
+                  type: string
+      responses:
+        '200':
+          description: Partner Profile Retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    status_code:
+                      type: string
+                    status_desc:
+                      type: string
+                    wallet:
+                      type: object
+                      properties:
+                        account_number:
+                          type: string
+                        account_type:
+                          type: string
+                        credit_balance:
+                          type: string
+                        post_paid:
+                          type: string
+                    partner:
+                      type: object
+                      properties:
+                        partner_id:
+                          type: string
+                        company:
+                          type: string
+                        telephone_number:
+                          type: string
+                        email_address:
+                          type: string
+                        is_reseller:
+                          type: string
+                        physical_address:
+                          type: string
+                        postal_address:
+                          type: string
+                        registration_number:
+                          type: string
+                        website_url:
+                          type: string
+                        domain_url:
+                          type: string
+                        paybill:
+                          type: string
+                        default_sms_rate:
+                          type: string
+                        kra_pin:
+                          type: string
+                        parent_partner_id:
+                          type: string
+                    user:
+                      type: object
+                      properties:
+                        user_id:
+                          type: string
+                        first_name:
+                          type: string
+                        second_name:
+                          type: string
+                        last_name:
+                          type: string
+                        date_of_birth:
+                          type: string
+                          nullable: true
+                        phone_number:
+                          type: string
+                        email_address:
+                          type: string
+                        gender:
+                          type: string
+                          nullable: true
+                        login_status:
+                          type: string
+                        created_on:
+                          type: string
+                        updated_on:
+                          type: string
+                        permission_type:
+                          type: string
+                        user_name:
+                          type: string
+                        last_login_ip:
+                          type: string
+
+x-delivery-codes:
+  description: Delivery Codes and Their Meaning
+  codes:
+    - code: 1
+      status: DeliveredToTerminal
+      message_status: Delivered
+      description: Message delivered to the end user's device
+    - code: 2
+      status: MessageWaiting
+      message_status: Queued
+      description: Forwarded to operator, no DLR yet
+    - code: 3
+      status: DeliveryImpossible
+      message_status: Failed
+      description: Operator/system error
+    - code: 4
+      status: DeliveryNotificationNotSupported
+      message_status: Delivered
+      description: Delivered in test environment
+    - code: 5
+      status: DeliveredToNetwork
+      message_status: NoReport
+      description: No delivery report returned
+    - code: 6
+      status: DeliveryUncertain
+      message_status: NoReport
+      description: No report after 24hrs
+    - code: 7
+      status: Insufficient_Balance
+      message_status: Failed
+      description: Insufficient balance
+    - code: 8
+      status: Invalid_Linkid
+      message_status: Failed
+      description: Invalid or expired link ID
+    - code: 9
+      status: TeleserviceNotProvisioned
+      message_status: Failed
+      description: Device cannot receive GSM messages
+    - code: 10
+      status: UserInBlacklist
+      message_status: Failed
+      description: User opted out from messages
+    - code: 11
+      status: UserAbnormalState
+      message_status: Failed
+      description: Number blocked
+    - code: 12
+      status: UserIsSuspended
+      message_status: Failed
+      description: Suspended number
+    - code: 13
+      status: NotSFCUser
+      message_status: Failed
+      description: Not subscribed to service
+    - code: 14
+      status: UserNotSubscribed
+      message_status: Failed
+      description: Not subscribed
+    - code: 15
+      status: UserNotExist
+      message_status: Failed
+      description: Invalid number
+    - code: 16
+      status: AbsentSubscriber
+      message_status: Failed
+      description: Out of network for 24hrs
+    - code: 17
+      status: NOT_DELIVERED
+      message_status: Failed
+      description: Same as DeliveryImpossible
+    - code: 18
+      status: DELIVERED
+      message_status: Delivered
+      description: Delivered
+    - code: 19
+      status: ForwardedToNetwork
+      message_status: NoReport
+      description: Sent to network, no report
+    - code: 20
+      status: MessagePaused
+      message_status: Queued
+      description: Paused by system
+    - code: 21
+      status: MessageRejected
+      message_status: Failed
+      description: Opted out
+    - code: 22
+      status: Queued
+      message_status: Queued
+      description: Not yet processed
+    - code: 23
+      status: InvalidMobile
+      message_status: Failed
+      description: Invalid number format
+    - code: 24
+      status: ReportNotHandled
+      message_status: Failed
+      description: Unknown failure
